@@ -15,6 +15,9 @@ class Board{
 
         // Define the function to print the board
         void print_board();
+
+        // Define the function to make a move
+        void make_move(std::array<int, 2> from_square, std::array<int, 2> to_square);
 };
 
 #endif

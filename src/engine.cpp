@@ -14,5 +14,5 @@ std::vector<std::array<int,2>> get_legal_move(char turn, std::array<int, 2> form
 
 // Define the function to check if a move is legal
 bool is_legal(std::array<int, 2> from_square, std::array<int, 2> to_square){
-
+    
 }

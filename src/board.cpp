@@ -27,3 +27,10 @@ void Board::print_board(){
         std::cout<<"\n";
     }
 }
+
+// Define the function to make a move
+void Board::make_move(std::array<int, 2> from_square, std::array<int, 2> to_square){
+    char piece = this->board_array[from_square[0]][from_square[1]];
+    this->board_array[from_square[0]][from_square[1]] = ' ';
+    this->board_array[to_square[0]][to_square[1]] = piece;
+}
