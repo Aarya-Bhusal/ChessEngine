@@ -32,7 +32,7 @@ bool Engine::is_opposite(char piece, char to_sqr_element){
 
     if((asci>=(int)'a' && asci<=(int)'z') && (piece_asci>=(int)'A' && piece_asci<=(int)'Z')){
         return true;
-    }else if((asci>=(int)'A' && asci<=(int)'Z') && (piece_asci>=(int)'a' && piece_asci<=(int)'a')){
+    }else if((asci>=(int)'A' && asci<=(int)'Z') && (piece_asci>=(int)'a' && piece_asci<=(int)'z')){
         return true;
     }else return false;
 }
@@ -100,7 +100,8 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
             if((capturing_row == to_row) && (from_col+1 == to_col || from_col-1 == to_col)){
                 // Only allow capturing opposite color
                 bool opposite_piece = is_opposite(piece, to_sqr_element);
-
+                std::cout<<opposite_piece<<"\n";
+                
                 if(opposite_piece){
                     // Check if the move will cause check or not
                     std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
@@ -276,6 +277,114 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
             if(is_check(moved_board_arr)!=true) return true;
             else return false;
         }else return false;
+    }
+
+    // Check legality for Rook
+    else if(piece=='R' || piece=='r'){
+        // Top
+        if((to_row>from_row) && (to_col==from_col)){
+            for(int i=from_row+1; i<=to_row; i++){
+                char element_at_current_sqr = board_array[i][from_col];
+                if((i!=to_row) && (element_at_current_sqr!=' ')){
+                    std::cout<<element_at_current_sqr<<"\n";
+                    return false;
+                }
+                else if(i==to_row){
+                    bool valid_square=false;
+                    if(element_at_current_sqr!=' '){
+                        valid_square = is_opposite(piece, to_sqr_element);
+                    }
+                    else{
+                        valid_square=true;
+                    }
+                    if(valid_square){
+                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
+                        if(is_check(moved_board)!=true){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Bottom
+        else if((to_row<from_row) && (to_col==from_col)){
+            std::cout<<"\nHi\n";
+            for(int i=from_row-1; i>=to_row; i--){
+                char element_at_current_sqr = board_array[i][from_col];
+                if((i!=to_row) && (element_at_current_sqr!=' ')){
+                    return false;
+                }
+                else if(i==to_row){
+                    bool valid_square=false;
+                    if(element_at_current_sqr!=' '){
+                        valid_square = is_opposite(piece, to_sqr_element);
+                    }
+                    else{
+                        valid_square=true;
+                    }
+                    if(valid_square){
+                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
+                        if(is_check(moved_board)!=true){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Right
+        else if((to_row==from_row) && (to_col>from_col)){
+            for(int i=from_col+1; i<=to_col; i++){
+                char element_at_current_sqr = board_array[from_row][i];
+                if((i!=to_col) && (element_at_current_sqr!=' ')){
+                    std::cout<<element_at_current_sqr<<"\n";
+                    return false;
+                }
+                else if(i==to_col){
+                    bool valid_square=false;
+                    if(element_at_current_sqr!=' '){
+                        valid_square = is_opposite(piece, to_sqr_element);
+                    }
+                    else{
+                        valid_square=true;
+                    }
+                    if(valid_square){
+                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
+                        if(is_check(moved_board)!=true){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Left
+        else if((to_row==from_row) && (to_col<from_col)){
+            for(int i=from_col-1; i>=to_col; i--){
+                char element_at_current_sqr = board_array[from_row][i];
+                if((i!=to_col) && (element_at_current_sqr!=' ')){
+                    std::cout<<element_at_current_sqr<<"\n";
+                    return false;
+                }
+                else if(i==to_col){
+                    bool valid_square=false;
+                    if(element_at_current_sqr!=' '){
+                        valid_square = is_opposite(piece, to_sqr_element);
+                    }
+                    else{
+                        valid_square=true;
+                    }
+                    if(valid_square){
+                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
+                        if(is_check(moved_board)!=true){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        else return false;
     }
 
 return false;
