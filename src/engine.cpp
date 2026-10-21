@@ -100,7 +100,6 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
             if((capturing_row == to_row) && (from_col+1 == to_col || from_col-1 == to_col)){
                 // Only allow capturing opposite color
                 bool opposite_piece = is_opposite(piece, to_sqr_element);
-                std::cout<<opposite_piece<<"\n";
                 
                 if(opposite_piece){
                     // Check if the move will cause check or not
@@ -387,5 +386,24 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
         else return false;
     }
 
+    // Check the legality for King
+    else if(piece=='K' || piece=='k'){
+        if(((to_row-from_row)>=-1)&&((to_row-from_row)<=1) && ((to_col-from_col)>=-1)&&((to_col-from_col)<=1)){
+            bool valid_move = false;
+            if(to_sqr_element!=' '){
+                valid_move = is_opposite(piece, to_sqr_element);
+            }
+            else{
+                valid_move = true;
+            }
+
+            if(valid_move){
+                std::array<std::array<char, 8>, 8> moved_array = make_move(board_array, from_square, to_square);
+                if(is_check(moved_array)!=true){
+                    return true;
+                }else return false;
+            }
+        }
+    }
 return false;
 }
