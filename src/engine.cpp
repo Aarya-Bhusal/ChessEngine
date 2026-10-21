@@ -25,6 +25,18 @@ int Engine::forward_pawn_steps(int row, char pawn){
     return 1;
 }
 
+// Define the function to check if two pieces are of opposite color
+bool Engine::is_opposite(char piece, char to_sqr_element){
+    int asci = (int)to_sqr_element;
+    int piece_asci = (int) piece;
+
+    if((asci>=(int)'a' && asci<=(int)'z') && (piece_asci>=(int)'A' && piece_asci<=(int)'Z')){
+        return true;
+    }else if((asci>=(int)'A' && asci<=(int)'Z') && (piece_asci>=(int)'a' && piece_asci<=(int)'a')){
+        return true;
+    }else return false;
+}
+
 // Define the function to check it is check
 bool Engine::is_check(std::array<std::array<char, 8>, 8> board_array){
     return false;
@@ -84,25 +96,125 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
             // Check if the to-square is even in the squares the pawn can move
             if((capturing_row == to_row) && (from_col+1 == to_col || from_col-1 == to_col)){
                 // Only allow capturing opposite color
-                int asci = (int)to_sqr_element;
-                int piece_asci = (int) piece;
-                bool opposite_piece = false;
-
-                if((asci>=(int)'a' && asci<=(int)'z') && (piece_asci>=(int)'A' && piece_asci<=(int)'Z')){
-                    opposite_piece = true;
-                }else if((asci>=(int)'A' && asci<=(int)'Z') && (piece_asci>=(int)'a' && piece_asci<=(int)'a')){
-                    opposite_piece = true;
-                }else return false;
+                bool opposite_piece = is_opposite(piece, to_sqr_element);
 
                 if(opposite_piece){
                     // Check if the move will cause check or not
                     std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
                     if(is_check(moved_board_arr)!=true) return true;
                     else return false;
-                }
+                } else return false;
 
             }else{
                 return false;
+            }
+        }
+
+        return false;
+    }
+
+    // Check legality for Bishop
+    else if(piece=='B' || piece=='b'){
+        int current_row = from_row;
+        int current_col = from_col;
+
+        // Top-Right Diagonal
+        if((to_row>from_row) && (to_col>from_col)){
+            while((current_row<=to_row)&&(current_col<=to_col)){
+                current_row++;
+                current_col++;
+                char element_at_current_sqr = board_array[current_row][current_col];
+                
+                // Return false if any piece lies in diagonal between from-square and to-square
+                if((current_row!=to_row) && (current_col!=to_col)){
+                    if(element_at_current_sqr!=' ') return false;
+                }
+                else{
+                    if(to_sqr_element!=' '){
+                        bool opposide_piece = is_opposite(piece, to_sqr_element);
+                        if(opposide_piece){
+                            // Check if the move will cause check or not
+                            std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
+                            if(is_check(moved_board_arr)!=true) return true;
+                            else return false;
+                        }
+                    } else return true;
+                }
+            }
+        }
+
+        // Top-Left Diagonal
+        if((to_row>from_row) && (to_col<from_col)){
+            while((current_row<=to_row) && (current_col>=to_col)){
+                current_row++;
+                current_col--;
+                char element_at_current_sqr = board_array[current_row][current_col];
+                
+                // Return false if any piece lies in diagonal between from-square and to-square
+                if((current_row!=to_row) && (current_col!=to_col)){
+                    if(element_at_current_sqr!=' ') return false;
+                }
+                else{
+                    if(to_sqr_element!=' '){
+                        bool opposide_piece = is_opposite(piece, to_sqr_element);
+                        if(opposide_piece){
+                            // Check if the move will cause check or not
+                            std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
+                            if(is_check(moved_board_arr)!=true) return true;
+                            else return false;
+                        }
+                    } else return true;
+                }
+            }  
+        }
+
+        // Bottom-Right Diagonal
+        if((to_row<from_row) && (to_col>from_col)){
+            while((current_row>=to_row) && (current_col<=to_col)){
+                current_row--;
+                current_col++;
+                char element_at_current_sqr = board_array[current_row][current_col];
+
+                // Return false if any piece lies in diagonal between from-square and to-square
+                if((current_row!=to_row) && (current_col!=to_col)){
+                    if(element_at_current_sqr!=' ') return false;
+                }
+                else{
+                    if(to_sqr_element!=' '){
+                        bool opposide_piece = is_opposite(piece, to_sqr_element);
+                        if(opposide_piece){
+                            // Check if the move will cause check or not
+                            std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
+                            if(is_check(moved_board_arr)!=true) return true;
+                            else return false;
+                        }
+                    } else return true;
+                }
+            }
+        }
+
+        // Bottom-Left Diagonal
+        if((to_row<from_row) && (to_col<from_col)){
+            while((current_row>=to_row) && (current_col>=to_col)){
+                current_row--;
+                current_col--;
+                char element_at_current_sqr = board_array[current_row][current_col];
+
+                // Return false if any piece lies in diagonal between from-square and to-square
+                if((current_row!=to_row) && (current_col!=to_col)){
+                    if(element_at_current_sqr!=' ') return false;
+                }
+                else{
+                    if(to_sqr_element!=' '){
+                        bool opposide_piece = is_opposite(piece, to_sqr_element);
+                        if(opposide_piece){
+                            // Check if the move will cause check or not
+                            std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
+                            if(is_check(moved_board_arr)!=true) return true;
+                            else return false;
+                        }
+                    } else return true;
+                }
             }
         }
 

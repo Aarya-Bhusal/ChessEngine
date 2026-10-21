@@ -8,12 +8,14 @@ int main(){
     Board board;
     Engine engine;
     board.print_board();
-    std::array<int,2> from_square = {1,4};
-    std::array<int,2> to_square = {2,5};
+    std::cout<<"\n";
+    std::array<int,2> from_square = {3,3};
+    std::array<int,2> to_square = {4,2};
     bool is_legal = engine.is_legal(board.board_array, from_square, to_square);
     if(is_legal){
         board.make_move(from_square, to_square);
     }
     board.print_board();
+    std::cout<<"\n";
     return 0;
 }

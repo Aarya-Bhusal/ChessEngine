@@ -17,6 +17,9 @@ class Engine{
         // Declare the function to return the num of row a pawn can move
         int forward_pawn_steps(int row, char pawn);
 
+        // Declare the function to check if two pieces are of opposite color
+        bool is_opposite(char piece, char to_sqr_element);
+
         // Define the function to check it is check
         bool is_check(std::array<std::array<char, 8>, 8> board_array);
 
