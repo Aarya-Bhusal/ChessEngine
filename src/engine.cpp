@@ -222,5 +222,61 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
         }
         return false;
     }
+
+    // Check legality for Knight
+    else if(piece=='N' || piece=='n'){
+        bool legal_status = false;
+        // L figure in Top-Right
+        if((from_row+2==to_row) && (from_col+1==to_col)){
+            legal_status = true;
+        }
+        // L figure in Top-Left
+        else if((from_row+2==to_row) && (from_col-1==to_col)){
+            legal_status = true;
+        }
+        // L figure in Right-Top
+        else if((from_row+1==to_row) && (from_col+2==to_col)){
+            legal_status = true;
+        }
+        // L figure in Right-Bottom
+        else if((from_row-1==to_row) && (from_col+2==to_col)){
+            legal_status = true;
+        }
+        // L figure in Bottom-Right
+        else if((from_row-2==to_row) && (from_col+1==to_col)){
+            legal_status = true;
+        }
+        // L figure in Bottom-Left
+        else if((from_row-2==to_row) && (from_col-1==to_col)){
+            legal_status = true;
+        }
+        // L figure in Left-Bottom
+        else if((from_row-1==to_row) && (from_col-2==to_col)){
+            legal_status = true;
+        }
+        // L figure in Left-Top
+        else if((from_row+1==to_row) && (from_col-2==to_col)){
+            legal_status = true;
+        }
+        
+        // Make sure there is opponent piece while capturing
+        bool valid = false;
+        if(legal_status){
+            if(to_sqr_element!=' '){
+                bool is_opponent = is_opposite(piece, to_sqr_element);
+                if(is_opponent){
+                    valid = true;
+                };
+            } else valid = true;
+        }
+
+        // Check if the move will cause check
+        if(valid){
+            std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
+            if(is_check(moved_board_arr)!=true) return true;
+            else return false;
+        }else return false;
+    }
+
 return false;
 }
