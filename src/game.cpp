@@ -7,15 +7,33 @@
 int main(){
     Board board;
     Engine engine;
-    board.print_board();
-    std::cout<<"\n";
-    std::array<int,2> from_square = {3,3};
-    std::array<int,2> to_square = {4,2};
-    bool is_legal = engine.is_legal(board.board_array, from_square, to_square);
-    if(is_legal){
-        board.make_move(from_square, to_square);
+    
+    // Squares
+    std::string from_square;
+    std::string to_square;
+
+    // Game loop
+    while(true){
+        board.print_board();
+        std::cout<<"\n";
+        std::cout<<"Enter the from square : ";
+        std::cin>>from_square;
+        std::cout<<"Enter the to square : ";
+        std::cin>>to_square;
+        int from_col = (int)from_square[0] - 97;
+        int from_row = from_square[1]-'0';
+        std::array<int, 2> from_square = {from_row-1, from_col};
+        int to_col = (int)to_square[0] - 97;
+        int to_row = to_square[1]-'0';
+        std::array<int, 2> to_square = {to_row-1, to_col};
+        bool is_legal = engine.is_legal(board.board_array, from_square, to_square);
+        if(is_legal){
+            board.make_move(from_square, to_square);
+        }else{
+            std::cout<<"Illegal_move";
+        }
+        std::cout<<"\n";
     }
-    board.print_board();
-    std::cout<<"\n";
+
     return 0;
 }

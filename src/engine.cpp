@@ -65,18 +65,21 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
             bool legal_status = false;
             for(int i=1; i<=forward_steps; i++){
                 char piece_at_i;
+                int current_row;
                 // Check if the piece is white or black
                 if(piece=='P'){
                     piece_at_i = board_array[from_row+i][from_col];
+                    current_row = from_row+i;
                 }else{
                     piece_at_i = board_array[from_row-i][from_col];
+                    current_row = from_row-i;
                 }
 
-                // Check if ther is any piece in to_square or 
+                // Check if there is any piece in to_square or 
                 if(piece_at_i!=' '){
                     return false;
                 }else{
-                    if((from_row+i==to_row) && (from_col==to_col)){
+                    if((current_row==to_row) && (from_col==to_col)){
                         std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
                         if(is_check(moved_board_arr)!=true){
                             return true;
@@ -217,7 +220,7 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
                 }
             }
         }
-
         return false;
     }
+return false;
 }
