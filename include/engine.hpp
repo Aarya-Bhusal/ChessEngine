@@ -21,25 +21,25 @@ class Engine{
         bool is_opposite(char piece, char to_sqr_element);
 
         // Declare the function to check it is check
-        bool is_check(std::array<std::array<char, 8>, 8> board_array);
+        bool is_check(std::array<std::array<char, 8>, 8> board_array, char color);
 
         // Declare the function to check legality for pawn
-        bool check_pawn_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col);
+        bool check_pawn_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece);
         
         // Declare the function to check legality for bishop
-        bool check_bishop_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col);
+        bool check_bishop_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece);
         
         // Declare the function to check legality for knight
-        bool check_knight_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col);
+        bool check_knight_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece);
         
         // Declare the function to check legality for rook
-        bool check_rook_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col);
+        bool check_rook_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece);
         
         // Declare the function to check legality for king
-        bool check_king_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col);
+        bool check_king_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece);
         
         // Declare the function to check legality for queen
-        bool check_queen_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col);
+        bool check_queen_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece);
 
         // Declare the function to list all the legal moves
         std::vector<std::array<int,2>> get_legal_move(char turn, std::array<int, 2> form_square);

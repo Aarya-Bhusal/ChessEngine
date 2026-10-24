@@ -1,6 +1,7 @@
 // Include all the necessary libraries
 #include "engine.hpp"
 #include <iostream>
+#include <cstdlib>
 
 // Define the Engine consturctor
 Engine::Engine(){
@@ -38,16 +39,23 @@ bool Engine::is_opposite(char piece, char to_sqr_element){
 }
 
 // Define the function to check it is check
-bool Engine::is_check(std::array<std::array<char, 8>, 8> board_array){
+bool Engine::is_check(std::array<std::array<char, 8>, 8> board_array, char color){
     return false;
 }
 
 // Define the function to check legality for pawn
-bool Engine::check_pawn_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col){
+bool Engine::check_pawn_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece){
+    // Get the info about from_square and to_square
+    char to_sqr_element = board_array[to_square[0]][to_square[1]];
+    int from_row = from_square[0];
+    int from_col = from_square[1];
+    int to_row = to_square[0];
+    int to_col = to_square[1];
+
     // If pawn is moving in front direction
     if(from_col==to_col){
         int forward_steps = forward_pawn_steps(from_row, piece);
-        bool legal_status = false;
+        bool legal_status = false;\
         for(int i=1; i<=forward_steps; i++){
             char piece_at_i;
             int current_row;
@@ -66,9 +74,7 @@ bool Engine::check_pawn_legality(std::array<std::array<char, 8>, 8> board_array,
             }else{
                 if((current_row==to_row) && (from_col==to_col)){
                     std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
-                    if(is_check(moved_board_arr)!=true){
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
@@ -86,12 +92,8 @@ bool Engine::check_pawn_legality(std::array<std::array<char, 8>, 8> board_array,
             // Only allow capturing opposite color
             bool opposite_piece = is_opposite(piece, to_sqr_element);
                 
-            if(opposite_piece){
-                // Check if the move will cause check or not
-                std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
-                if(is_check(moved_board_arr)!=true) return true;
-                else return false;
-            } else return false;
+            if(opposite_piece) return true;
+            else return false;
 
         }else{
             return false;
@@ -101,114 +103,107 @@ bool Engine::check_pawn_legality(std::array<std::array<char, 8>, 8> board_array,
 }
 
 // Define the function to check legality for bishop
-bool Engine::check_bishop_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col){
+bool Engine::check_bishop_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece){
+    // Get the info about from_square and to_square
+    char to_sqr_element = board_array[to_square[0]][to_square[1]];
+    int from_row = from_square[0];
+    int from_col = from_square[1];
+    int to_row = to_square[0];
+    int to_col = to_square[1];
+    
     int current_row = from_row;
     int current_col = from_col;
 
-    // Top-Right Diagonal
-    if((to_row>from_row) && (to_col>from_col)){
-        while((current_row<=to_row)&&(current_col<=to_col)){
-            current_row++;
-            current_col++;
-            char element_at_current_sqr = board_array[current_row][current_col];
-                
-            // Return false if any piece lies in diagonal between from-square and to-square
-            if((current_row!=to_row) && (current_col!=to_col)){
-                if(element_at_current_sqr!=' ') return false;
+    bool legality = false;
+
+    // Check if both from square and to squares lies in a diagonal
+    if(std::abs(from_row-to_row) == std::abs(from_col-to_col)){
+        // Top-Right Diagonal
+        if((to_row>from_row) && (to_col>from_col)){
+            int row = from_row+1;
+            int col = from_col+1;
+            while((row!=to_row) && (col!=to_col)){
+                char element_at_sqr = board_array[row][col];
+                std::cout<<"\n"<<element_at_sqr<<"\n";
+                if(element_at_sqr!=' '){
+                    return false;
+                }
+                row++;
+                col++;
             }
-            else{
-                if(to_sqr_element!=' '){
-                    bool opposide_piece = is_opposite(piece, to_sqr_element);
-                    if(opposide_piece){
-                        // Check if the move will cause check or not
-                        std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board_arr)!=true) return true;
-                        else return false;
-                    }
-                } else return true;
-            }
+            legality = true;
         }
-    }
 
-    // Top-Left Diagonal
-    if((to_row>from_row) && (to_col<from_col)){
-        while((current_row<=to_row) && (current_col>=to_col)){
-            current_row++;
-            current_col--;
-            char element_at_current_sqr = board_array[current_row][current_col];
-                
-            // Return false if any piece lies in diagonal between from-square and to-square
-            if((current_row!=to_row) && (current_col!=to_col)){
-                if(element_at_current_sqr!=' ') return false;
+        // Top-Left Diagonal
+        else if((to_row>from_row) && (to_col<from_col)){
+            int row = from_row+1;
+            int col = from_col-1;
+            while((row!=to_row) && (col!=to_col)){
+                char element_at_sqr = board_array[row][col];
+                std::cout<<"\n"<<element_at_sqr<<"\n";
+                if(element_at_sqr!=' '){
+                    return false;
+                }
+                row++;
+                col--;
             }
-            else{
-                if(to_sqr_element!=' '){
-                    bool opposide_piece = is_opposite(piece, to_sqr_element);
-                    if(opposide_piece){
-                        // Check if the move will cause check or not
-                        std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board_arr)!=true) return true;
-                        else return false;
-                    }
-                } else return true;
-            }
-        }  
-    }
-
-    // Bottom-Right Diagonal
-    if((to_row<from_row) && (to_col>from_col)){
-        while((current_row>=to_row) && (current_col<=to_col)){
-            current_row--;
-            current_col++;
-            char element_at_current_sqr = board_array[current_row][current_col];
-
-            // Return false if any piece lies in diagonal between from-square and to-square
-            if((current_row!=to_row) && (current_col!=to_col)){
-                if(element_at_current_sqr!=' ') return false;
-            }
-            else{
-                if(to_sqr_element!=' '){
-                    bool opposide_piece = is_opposite(piece, to_sqr_element);
-                    if(opposide_piece){
-                        // Check if the move will cause check or not
-                        std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board_arr)!=true) return true;
-                        else return false;
-                    }
-                } else return true;
-            }
+            legality = true;
         }
-    }
 
-    // Bottom-Left Diagonal
-    if((to_row<from_row) && (to_col<from_col)){
-        while((current_row>=to_row) && (current_col>=to_col)){
-            current_row--;
-            current_col--;
-            char element_at_current_sqr = board_array[current_row][current_col];
-
-            // Return false if any piece lies in diagonal between from-square and to-square
-            if((current_row!=to_row) && (current_col!=to_col)){
-                if(element_at_current_sqr!=' ') return false;
+        // Bottom-Right Diagonal
+        else if((to_row<from_row) && (to_col>from_col)){
+            int row = from_row-1;
+            int col = from_col+1;
+            while((row!=to_row) && (col!=to_col)){
+                char element_at_sqr = board_array[row][col];
+                std::cout<<"\n"<<element_at_sqr<<"\n";
+                if(element_at_sqr!=' '){
+                    return false;
+                }
+                row--;
+                col++;
             }
-            else{
-                if(to_sqr_element!=' '){
-                    bool opposide_piece = is_opposite(piece, to_sqr_element);
-                    if(opposide_piece){
-                        // Check if the move will cause check or not
-                        std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board_arr)!=true) return true;
-                        else return false;
-                    }
-                } else return true;
-            }
+            legality = true;
         }
+
+        // Bottom-Left Diagonal
+        else if((to_row<from_row) && (to_col<from_col)){
+            int row = from_row-1;
+            int col = from_col-1;
+            while((row!=to_row) && (col!=to_col)){
+                char element_at_sqr = board_array[row][col];
+                std::cout<<"\n"<<element_at_sqr<<"\n";
+                if(element_at_sqr!=' '){
+                    return false;
+                }
+                row--;
+                col--;
+            }
+            legality = true;
+        }
+
+        // Check if the piece at the square we want to move is a opponent's piece
+        if(legality){
+            if(to_sqr_element!=' '){
+                bool is_opponet = is_opposite(piece, to_sqr_element);
+                return is_opponet;
+            }else return true;
+        }
+        
     }
+
     return false;
 }
 
 // Define the function to check legality for knight
-bool Engine::check_knight_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col){
+bool Engine::check_knight_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece){
+    // Get the info about from_square and to_square
+    char to_sqr_element = board_array[to_square[0]][to_square[1]];
+    int from_row = from_square[0];
+    int from_col = from_square[1];
+    int to_row = to_square[0];
+    int to_col = to_square[1];
+    
     bool legal_status = false;
     // L figure in Top-Right
     if((from_row+2==to_row) && (from_col+1==to_col)){
@@ -244,26 +239,24 @@ bool Engine::check_knight_legality(std::array<std::array<char, 8>, 8> board_arra
     }
         
     // Make sure there is opponent piece while capturing
-    bool valid = false;
     if(legal_status){
         if(to_sqr_element!=' '){
             bool is_opponent = is_opposite(piece, to_sqr_element);
             if(is_opponent){
-                valid = true;
+               return true;
             };
-        } else valid = true;
-    }
-
-    // Check if the move will cause check
-    if(valid){
-        std::array<std::array<char, 8>, 8> moved_board_arr = make_move(board_array, from_square, to_square);
-        if(is_check(moved_board_arr)!=true) return true;
-        else return false;
+        } else return true;
     }else return false;
 }
 
 // Define the function to check legality for rook
-bool Engine::check_rook_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col){
+bool Engine::check_rook_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece){
+    // Get the info about from_square and to_square
+    char to_sqr_element = board_array[to_square[0]][to_square[1]];
+    int from_row = from_square[0];
+    int from_col = from_square[1];
+    int to_row = to_square[0];
+    int to_col = to_square[1];
     // Top
         if((to_row>from_row) && (to_col==from_col)){
             for(int i=from_row+1; i<=to_row; i++){
@@ -273,18 +266,11 @@ bool Engine::check_rook_legality(std::array<std::array<char, 8>, 8> board_array,
                     return false;
                 }
                 else if(i==to_row){
-                    bool valid_square=false;
                     if(element_at_current_sqr!=' '){
-                        valid_square = is_opposite(piece, to_sqr_element);
+                        return is_opposite(piece, to_sqr_element);
                     }
                     else{
-                        valid_square=true;
-                    }
-                    if(valid_square){
-                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board)!=true){
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -296,21 +282,15 @@ bool Engine::check_rook_legality(std::array<std::array<char, 8>, 8> board_array,
             for(int i=from_row-1; i>=to_row; i--){
                 char element_at_current_sqr = board_array[i][from_col];
                 if((i!=to_row) && (element_at_current_sqr!=' ')){
+                    std::cout<<element_at_current_sqr<<"\n";
                     return false;
                 }
                 else if(i==to_row){
-                    bool valid_square=false;
                     if(element_at_current_sqr!=' '){
-                        valid_square = is_opposite(piece, to_sqr_element);
+                        return is_opposite(piece, to_sqr_element);
                     }
                     else{
-                        valid_square=true;
-                    }
-                    if(valid_square){
-                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board)!=true){
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -319,24 +299,17 @@ bool Engine::check_rook_legality(std::array<std::array<char, 8>, 8> board_array,
         // Right
         else if((to_row==from_row) && (to_col>from_col)){
             for(int i=from_col+1; i<=to_col; i++){
-                char element_at_current_sqr = board_array[from_row][i];
-                if((i!=to_col) && (element_at_current_sqr!=' ')){
+                char element_at_current_sqr = board_array[i][from_col];
+                if((i!=to_row) && (element_at_current_sqr!=' ')){
                     std::cout<<element_at_current_sqr<<"\n";
                     return false;
                 }
-                else if(i==to_col){
-                    bool valid_square=false;
+                else if(i==to_row){
                     if(element_at_current_sqr!=' '){
-                        valid_square = is_opposite(piece, to_sqr_element);
+                        return is_opposite(piece, to_sqr_element);
                     }
                     else{
-                        valid_square=true;
-                    }
-                    if(valid_square){
-                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board)!=true){
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -345,24 +318,17 @@ bool Engine::check_rook_legality(std::array<std::array<char, 8>, 8> board_array,
         // Left
         else if((to_row==from_row) && (to_col<from_col)){
             for(int i=from_col-1; i>=to_col; i--){
-                char element_at_current_sqr = board_array[from_row][i];
-                if((i!=to_col) && (element_at_current_sqr!=' ')){
+                char element_at_current_sqr = board_array[i][from_col];
+                if((i!=to_row) && (element_at_current_sqr!=' ')){
                     std::cout<<element_at_current_sqr<<"\n";
                     return false;
                 }
-                else if(i==to_col){
-                    bool valid_square=false;
+                else if(i==to_row){
                     if(element_at_current_sqr!=' '){
-                        valid_square = is_opposite(piece, to_sqr_element);
+                        return is_opposite(piece, to_sqr_element);
                     }
                     else{
-                        valid_square=true;
-                    }
-                    if(valid_square){
-                        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
-                        if(is_check(moved_board)!=true){
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }
@@ -371,28 +337,45 @@ bool Engine::check_rook_legality(std::array<std::array<char, 8>, 8> board_array,
 }
 
 // Define the function to check legality for king
-bool Engine::check_king_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col){
+bool Engine::check_king_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece){
+    // Get the info about from_square and to_square
+    char to_sqr_element = board_array[to_square[0]][to_square[1]];
+    int from_row = from_square[0];
+    int from_col = from_square[1];
+    int to_row = to_square[0];
+    int to_col = to_square[1];
+
     if(((to_row-from_row)>=-1)&&((to_row-from_row)<=1) && ((to_col-from_col)>=-1)&&((to_col-from_col)<=1)){
-            bool valid_move = false;
             if(to_sqr_element!=' '){
-                valid_move = is_opposite(piece, to_sqr_element);
+                return is_opposite(piece, to_sqr_element);
             }
             else{
-                valid_move = true;
+                return true;
             }
-
-            if(valid_move){
-                std::array<std::array<char, 8>, 8> moved_array = make_move(board_array, from_square, to_square);
-                if(is_check(moved_array)!=true){
-                    return true;
-                }else return false;
-            }
-        }
+    }else return false;
 }
+
 // Define the function to check legality for queen
-bool Engine::check_queen_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece,char to_sqr_element,int from_row,int from_col,int to_row,int to_col){
-    bool bishop_legality = check_bishop_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
-    bool rook_legality = check_rook_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
+bool Engine::check_queen_legality(std::array<std::array<char, 8>, 8> board_array, std::array<int, 2> from_square, std::array<int, 2> to_square,char piece){
+    // Get the info about from_square and to_square
+    char to_sqr_element = board_array[to_square[0]][to_square[1]];
+    int from_row = from_square[0];
+    int from_col = from_square[1];
+    int to_row = to_square[0];
+    int to_col = to_square[1];
+    
+    char bishop_piece;
+    char rook_piece;
+    if(piece=='Q'){
+        bishop_piece='B';
+        rook_piece='R';
+    }else{
+        bishop_piece='b';
+        rook_piece='r';
+    }
+
+    bool bishop_legality = check_bishop_legality(board_array, from_square, to_square, piece);
+    bool rook_legality = check_rook_legality(board_array, from_square, to_square, piece);
     if(bishop_legality || rook_legality){
         return true;
     }else return false;
@@ -413,40 +396,50 @@ bool Engine::is_legal(std::array<std::array<char, 8>, 8> board_array, std::array
     int to_row = to_square[0];
     int to_col = to_square[1];
 
+    char color;
+    if(piece>='a' && piece<='z') color='B';
+    if(piece>='A' && piece<='Z') color='W';
+
+    bool legality;
+
     // Check legality for pawn
     if(piece=='P' || piece=='p'){
-        bool legality = check_pawn_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
-        return legality;
+        legality = check_pawn_legality(board_array, from_square, to_square, piece);
     }
 
     // Check legality for Bishop
     else if(piece=='B' || piece=='b'){
-        bool legality = check_bishop_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
-        return legality;
+        legality = check_bishop_legality(board_array, from_square, to_square, piece);
     }
 
     // Check legality for Knight
     else if(piece=='N' || piece=='n'){
-        bool legality = check_knight_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
-        return legality;
+        legality = check_knight_legality(board_array, from_square, to_square, piece);
     }
 
     // Check legality for Rook
     else if(piece=='R' || piece=='r'){
-        bool legality = check_rook_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
-        return legality;
+        legality = check_rook_legality(board_array, from_square, to_square, piece);
     }
 
     // Check the legality for King
     else if(piece=='K' || piece=='k'){
-        bool legality = check_king_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
-        return legality;
+        legality = check_king_legality(board_array, from_square, to_square, piece);
     }
 
     // Check the legality for Queen
     else if(piece=='Q' || piece=='q'){
-        bool legality = check_queen_legality(board_array, from_square, to_square, piece, to_sqr_element, from_row, from_col, to_row, to_col);
-        return legality;
+        legality = check_queen_legality(board_array, from_square, to_square, piece);
     }
-    return false;
+    else legality = false;
+
+    if(legality){
+        // Only allow move if it will not cause any checks
+        std::array<std::array<char, 8>, 8> moved_board = make_move(board_array, from_square, to_square);
+        if(is_check(moved_board, color)!=true){
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
